@@ -1,24 +1,29 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SFCC AM Automation Flowcharts</title>
+    <title>SFCC AM Automation Diagrams</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .container {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 40px;
-            margin: 20px auto;
-            max-width: 1200px;
+            max-width: 90%;
+            width: 1000px;
+            margin: 20px;
         }
         h1, h2 {
             color: #4a4a4a;
@@ -30,53 +35,32 @@
         h2 {
             font-size: 2em;
         }
-        .flowchart {
+        .diagram {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             margin-bottom: 40px;
-            overflow-x: auto;
-            padding: 20px 0;
         }
         .node {
-            width: 150px;
-            height: 80px;
-            padding: 10px;
+            width: 200px;
+            padding: 15px;
             border-radius: 10px;
-            margin: 0 10px;
+            margin: 10px;
             color: white;
             text-align: center;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
         }
         .edge {
-            flex-grow: 1;
-            height: 2px;
+            width: 2px;
+            height: 50px;
             background-color: #333;
-            position: relative;
-        }
-        .edge::after {
-            content: '';
-            position: absolute;
-            right: -10px;
-            top: -4px;
-            width: 0;
-            height: 0;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
-            border-left: 10px solid #333;
+            margin: 5px auto;
         }
         .edge-label {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8em;
-            white-space: nowrap;
+            text-align: center;
+            font-style: italic;
+            margin: 5px 0;
         }
         .file { background-color: #66CCFF; }
         .jfrog { background-color: #33AACC; }
@@ -86,37 +70,58 @@
 </head>
 <body>
     <div class="container">
-        <h1>SFCC AM Automation Flowcharts</h1>
+        <h1>SFCC AM Automation Diagrams</h1>
         
         <h2>CSV/XLSM Automation Flow</h2>
-        <div class="flowchart">
+        <div class="diagram">
             <div class="node file">XLSM File<br>(Input Data & Macros)</div>
-            <div class="edge"><div class="edge-label">Generate CSV</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Generate CSV</div>
+            <div class="edge"></div>
             <div class="node file">CSV File<br>(Converted Data)</div>
-            <div class="edge"><div class="edge-label">Upload CSV to JFrog</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Upload CSV to JFrog</div>
+            <div class="edge"></div>
             <div class="node jfrog">JFrog<br>(Upload CSV)</div>
-            <div class="edge"><div class="edge-label">Trigger CircleCI Pipeline</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Trigger CircleCI Pipeline</div>
+            <div class="edge"></div>
             <div class="node circleci">CircleCI<br>(Trigger Pipeline)</div>
-            <div class="edge"><div class="edge-label">Execute Shell Scripts</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Execute Shell Scripts</div>
+            <div class="edge"></div>
             <div class="node circleci">Shell Scripts<br>(Execute Operations)</div>
-            <div class="edge"><div class="edge-label">Collect Response</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Collect Response</div>
+            <div class="edge"></div>
             <div class="node circleci">Pipeline Run<br>(Response Collection)</div>
-            <div class="edge"><div class="edge-label">Upload Response to JFrog</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Upload Response to JFrog</div>
+            <div class="edge"></div>
             <div class="node jfrog">JFrog<br>(Upload Response)</div>
         </div>
 
         <h2>Slackbot Automation Flow</h2>
-        <div class="flowchart">
+        <div class="diagram">
             <div class="node slack">Slackbot<br>(Command Execution)</div>
-            <div class="edge"><div class="edge-label">Pass Operation & Parameters</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Pass Operation & Parameters</div>
+            <div class="edge"></div>
             <div class="node circleci">CircleCI<br>(Trigger Pipeline)</div>
-            <div class="edge"><div class="edge-label">Execute Shell Scripts</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Execute Shell Scripts</div>
+            <div class="edge"></div>
             <div class="node circleci">Shell Scripts<br>(Execute Operations)</div>
-            <div class="edge"><div class="edge-label">Collect Response</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Collect Response</div>
+            <div class="edge"></div>
             <div class="node circleci">Pipeline Run<br>(Response Collection)</div>
-            <div class="edge"><div class="edge-label">Send Response Back</div></div>
+            <div class="edge"></div>
+            <div class="edge-label">Send Response Back</div>
+            <div class="edge"></div>
             <div class="node slack">Slackbot<br>(Return Response)</div>
         </div>
     </div>
 </body>
 </html>
+    
