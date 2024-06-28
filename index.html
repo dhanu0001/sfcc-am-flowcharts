@@ -1,7 +1,48 @@
 import base64
 from graphviz import Digraph
 
-# (Keep the create_diagram function as it is)
+import base64
+from graphviz import Digraph
+
+def create_diagram(flow_type):
+    dot = Digraph(comment=f'SFCC AM {flow_type} Automation Diagram', format='png')
+    dot.attr(rankdir='TB', size='12,12', dpi='300')
+
+    file_color = '#66CCFF'
+    jfrog_color = '#33AACC'
+    circleci_color = '#343434'
+    slack_color = '#4A154B'
+
+    if flow_type == 'CSV/XLSM':
+        dot.node('A1', 'XLSM File\n(Input Data & Macros)', shape='box', style='filled', fillcolor=file_color, width='2')
+        dot.node('A2', 'CSV File\n(Converted Data)', shape='box', style='filled', fillcolor=file_color, width='2')
+        dot.node('A3', 'JFrog\n(Upload CSV)', shape='box', style='filled', fillcolor=jfrog_color, fontcolor='white', width='2')
+        dot.node('A4', 'CircleCI\n(Trigger Pipeline)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('A5', 'Shell Scripts\n(Execute Operations)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('A6', 'Pipeline Run\n(Response Collection)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('A7', 'JFrog\n(Upload Response)', shape='box', style='filled', fillcolor=jfrog_color, fontcolor='white', width='2')
+
+        dot.edge('A1', 'A2', 'Generate CSV')
+        dot.edge('A2', 'A3', 'Upload CSV')
+        dot.edge('A3', 'A4', 'Trigger Pipeline')
+        dot.edge('A4', 'A5', 'Execute Scripts')
+        dot.edge('A5', 'A6', 'Collect Response')
+        dot.edge('A6', 'A7', 'Upload Response')
+
+    elif flow_type == 'Slackbot':
+        dot.node('B1', 'Slackbot\n(Command Execution)', shape='box', style='filled', fillcolor=slack_color, fontcolor='white', width='2')
+        dot.node('B2', 'CircleCI\n(Trigger Pipeline)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('B3', 'Shell Scripts\n(Execute Operations)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('B4', 'Pipeline Run\n(Response Collection)', shape='box', style='filled', fillcolor=circleci_color, fontcolor='white', width='2')
+        dot.node('B5', 'Slackbot\n(Return Response)', shape='box', style='filled', fillcolor=slack_color, fontcolor='white', width='2')
+
+        dot.edge('B1', 'B2', 'Pass Operation & Parameters')
+        dot.edge('B2', 'B3', 'Execute Scripts')
+        dot.edge('B3', 'B4', 'Collect Response')
+        dot.edge('B4', 'B5', 'Send Response')
+
+    dot.attr(label=f'SFCC AM {flow_type} Automation Diagram', fontsize='20', labelloc='t')
+    return dot
 
 def create_html_content(csv_xlsm_encoded_image, slackbot_encoded_image, csv_xlsm_pointers, slackbot_pointers):
     pointer_html = lambda pointers: "".join([f"""
