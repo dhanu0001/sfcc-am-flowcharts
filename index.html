@@ -1,127 +1,132 @@
+import base64
+from graphviz import Digraph
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SFCC AM Automation Diagrams</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 90%;
-            width: 1000px;
-            margin: 20px;
-        }
-        h1, h2 {
-            color: #4a4a4a;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        h2 {
-            font-size: 2em;
-        }
-        .diagram {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        .node {
-            width: 200px;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .edge {
-            width: 2px;
-            height: 50px;
-            background-color: #333;
-            margin: 5px auto;
-        }
-        .edge-label {
-            text-align: center;
-            font-style: italic;
-            margin: 5px 0;
-        }
-        .file { background-color: #66CCFF; }
-        .jfrog { background-color: #33AACC; }
-        .circleci { background-color: #343434; }
-        .slack { background-color: #4A154B; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>SFCC AM Automation Diagrams</h1>
-        
-        <h2>CSV/XLSM Automation Flow</h2>
-        <div class="diagram">
-            <div class="node file">XLSM File<br>(Input Data & Macros)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Generate CSV</div>
-            <div class="edge"></div>
-            <div class="node file">CSV File<br>(Converted Data)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Upload CSV to JFrog</div>
-            <div class="edge"></div>
-            <div class="node jfrog">JFrog<br>(Upload CSV)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Trigger CircleCI Pipeline</div>
-            <div class="edge"></div>
-            <div class="node circleci">CircleCI<br>(Trigger Pipeline)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Execute Shell Scripts</div>
-            <div class="edge"></div>
-            <div class="node circleci">Shell Scripts<br>(Execute Operations)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Collect Response</div>
-            <div class="edge"></div>
-            <div class="node circleci">Pipeline Run<br>(Response Collection)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Upload Response to JFrog</div>
-            <div class="edge"></div>
-            <div class="node jfrog">JFrog<br>(Upload Response)</div>
-        </div>
+# (Keep the create_diagram function as it is)
 
-        <h2>Slackbot Automation Flow</h2>
-        <div class="diagram">
-            <div class="node slack">Slackbot<br>(Command Execution)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Pass Operation & Parameters</div>
-            <div class="edge"></div>
-            <div class="node circleci">CircleCI<br>(Trigger Pipeline)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Execute Shell Scripts</div>
-            <div class="edge"></div>
-            <div class="node circleci">Shell Scripts<br>(Execute Operations)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Collect Response</div>
-            <div class="edge"></div>
-            <div class="node circleci">Pipeline Run<br>(Response Collection)</div>
-            <div class="edge"></div>
-            <div class="edge-label">Send Response Back</div>
-            <div class="edge"></div>
-            <div class="node slack">Slackbot<br>(Return Response)</div>
+def create_html_content(csv_xlsm_encoded_image, slackbot_encoded_image, csv_xlsm_pointers, slackbot_pointers):
+    pointer_html = lambda pointers: "".join([f"""
+        <div class="pointer" style="left: {x}%; top: {y}%;">
+            <div class="pointer-dot"></div>
+            <div class="pointer-text">{i+1}. {text}</div>
         </div>
-    </div>
-</body>
-</html>
-    
+        """ for i, (x, y, text) in enumerate(pointers)])
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SFCC AM Automation Diagrams</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f0f0f0;
+            }}
+            .wrapper {{
+                max-width: 1200px;
+                margin: 0 auto;
+            }}
+            .container {{
+                background-color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                margin-bottom: 30px;
+            }}
+            h1, h2 {{
+                color: #333;
+                text-align: center;
+            }}
+            .diagram-container {{
+                position: relative;
+                display: inline-block;
+                width: 100%;
+            }}
+            #diagram {{
+                max-width: 100%;
+                height: auto;
+            }}
+            .pointer {{
+                position: absolute;
+                z-index: 10;
+            }}
+            .pointer-dot {{
+                width: 10px;
+                height: 10px;
+                background-color: red;
+                border-radius: 50%;
+                position: absolute;
+            }}
+            .pointer-text {{
+                position: absolute;
+                left: 15px;
+                top: -5px;
+                background-color: rgba(255, 255, 255, 0.8);
+                padding: 2px 5px;
+                border-radius: 3px;
+                font-size: 12px;
+                white-space: nowrap;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>SFCC AM Automation Diagrams</h1>
+            
+            <div class="container">
+                <h2>CSV/XLSM Automation Diagram</h2>
+                <div class="diagram-container">
+                    <img id="diagram" src="data:image/png;base64,{csv_xlsm_encoded_image}" alt="SFCC AM CSV/XLSM Automation Diagram">
+                    {pointer_html(csv_xlsm_pointers)}
+                </div>
+            </div>
+
+            <div class="container">
+                <h2>Slackbot Automation Diagram</h2>
+                <div class="diagram-container">
+                    <img id="diagram" src="data:image/png;base64,{slackbot_encoded_image}" alt="SFCC AM Slackbot Automation Diagram">
+                    {pointer_html(slackbot_pointers)}
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+# Create CSV/XLSM diagram
+csv_xlsm_dot = create_diagram('CSV/XLSM')
+csv_xlsm_png_data = csv_xlsm_dot.pipe(format='png')
+csv_xlsm_encoded_image = base64.b64encode(csv_xlsm_png_data).decode('utf-8')
+
+csv_xlsm_pointers = [
+    (5, 15, "Input XLSM file with macros"),
+    (25, 15, "Generate CSV from XLSM"),
+    (45, 15, "Upload CSV to JFrog"),
+    (65, 15, "Trigger CircleCI pipeline"),
+    (85, 15, "Execute shell scripts"),
+    (65, 85, "Collect response"),
+    (85, 85, "Upload response to JFrog")
+]
+
+# Create Slackbot diagram
+slackbot_dot = create_diagram('Slackbot')
+slackbot_png_data = slackbot_dot.pipe(format='png')
+slackbot_encoded_image = base64.b64encode(slackbot_png_data).decode('utf-8')
+
+slackbot_pointers = [
+    (10, 50, "Execute /sfcc-am command"),
+    (30, 50, "Pass operation to CircleCI"),
+    (50, 50, "Execute shell scripts"),
+    (70, 50, "Collect response"),
+    (90, 50, "Return response to Slackbot")
+]
+
+html_content = create_html_content(csv_xlsm_encoded_image, slackbot_encoded_image, csv_xlsm_pointers, slackbot_pointers)
+
+with open('index.html', 'w') as f:
+    f.write(html_content)
+
+print("HTML file with both diagrams saved as 'index.html'")
